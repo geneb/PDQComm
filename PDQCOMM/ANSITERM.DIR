@@ -1,0 +1,9 @@
+'This is an ANSITERM dialing directory. This directory is just
+'a simple text file. All comments, like these, must be specified
+'with an apostrophe just like QuickBASIC. The numbers will be mapped
+'to F1 - F10 in the order they appear.
+
+1-203-426-5958          'The Crescent Software Support BBS
+1-203-791-8532          'Treasure Island - Good file board
+
+'You can have up to 10 numbers here.

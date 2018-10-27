@@ -1,0 +1,243 @@
+     HISTORY.DOC -- changes and bug-fixes made to PDQComm 2.00 and later
+
+
+OPENCOM.ASM         9-17-90
+Added code to call SETMEM automatically, so the user doesn't need to do that.
+Also modified the code that takes over the communications interrupts to use
+BASIC's B_OnExit routine. Also added RTS as a valid handshaking parameter
+due to docs. Routine expected CTS.
+
+C$TIME.ASM          9-17-90
+New routine to measure elapsed time, used internally by OPENCOM.ASM.
+
+C$CHKHND.ASM and COMPRINT.ASM   9-17-90
+Fixed a bug that caused hardware handshaking to operate erratically.
+
+CLOSECOM.ASM        9-19-90
+CloseCom no longer sets ERR if the port wasn't open, to avoid a conflict with
+regular QuickBASIC.
+
+CRC16.ASM           9-19-90     BASIC 7 Far String Version
+Fixed a far string bug that caused CRC16 not to work in the QBX environment.
+
+COMLINP.ASM         9-21-90     BASIC 7 Far String Version
+Rewrote ComLineInput due to erratic behavior of far string internals.
+ ^------------------------------ Version 2.01 ------------------------------^
+
+SETHAND.ASM         10-23-90
+Recognize "RTS" as well as "CTS".  Accidentally omitted when OpenCom was
+fixed on 9-17.
+
+FLUSHBUF.ASM        10-23-90
+Added code to tell the remote terminal to resume sending if handshaking is in
+use when called, so the programmer doesn't have to do that manually.
+
+GLSTAT.ASM          10-23-90
+New routine to retrieve the status of all four hardware lines at once.
+
+PDQXMODM.BAS        10-23-90
+Changed the variable named SeekLoc& to SeekLocation&, because SeekLoc& is
+now a function name in P.D.Q.
+ ^------------------------------ Version 2.02 ------------------------------^
+
+COMMBC7.QLB/LIB     10-29-90
+Discovered that an old version of ComLineInput had inadvertently been placed
+into these libraries.
+ ^------------------------------ Version 2.03 ------------------------------^
+
+PDQCOMM 2.04        12-31-90
+Last maintenance release of "one-port" version of PDQCOMM. Rewrote routines
+so only 1 file is required for both near and far strings. To assemble for
+far strings, use the /DFS switch along with the /DQLB switch. Fixed bugs
+in the far string versions of ComInput$ and SetHand. PDQComm now restores
+the state of the UART except for baud and the state of the 8259 PIC to the
+values they had when OpenCom was used. XON/XOFF handshaking is now handeled
+internally by ComPrint the same way CTS/RTS handshaking is.
+ ^------------------------------ Version 2.04 ------------------------------^
+
+PDQCOMM 2.5       3/15/91
+New library with new manual. See manual for differences from previous
+versions.
+ ^------------------------------ Version 2.50 ------------------------------^
+
+OPENCOM.ASM       5/1/91
+Changed some error codes so they would reflect what was in the manual. Added
+more error checking on the port parameters passed in.
+
+OPENCOMX.ASM      5/1/91
+Same changes as OPENCOM.
+
+COMLINP.ASM       5/1/91
+Fixed problem with excessive time out when no line feed is received. Program
+will now wait .5 seconds for a linefeed.
+
+SETCOM.ASM        5/1/91
+Now checks Data Bits, Stop Bits, and Parity to see if they are in range.
+Returns ERROR 5, Illegal Function Call, if parameters are bad.
+
+D215DISP.BAS      5/1/91
+Fixed problem with cursor when it was at a window boundary.
+
+COMMDECL.BAS      5/1/91
+The declaration for the Pause subroutine was left out. Added it.
+
+PDQCOMM.ASM       5/1/91
+File inadvertently included with source. Removed.
+ ^------------------------------ Version 2.51 ------------------------------^
+
+CHECKSUM.ASM      9/1/91    
+Fixed error that caused "String Space Corrupt" error when using near
+strings.
+
+CRC16.ASM         9/1/91
+Fixed same problem as above.
+
+QB40BEXT.OBJ      9/1/91
+Added stub file to add B_OnExit support for users of QB 4.0b. See the
+comments in the README file for specifics on using this stub file.
+ ^------------------------------ Version 2.52 ------------------------------^
+
+ISAPORT.ASM       9/9/91
+New routine to check the existance of a serial port at a specified
+address. See README for more info on this.
+
+OPENCOM.ASM OPENCOMX.ASM SETCOM.ASM UARTTYPE.ASM   9/9/91
+Modified to use ISAPORT routine.
+
+ANSIDISP.BAS      9/9/91
+Fixed a bug that caused the cursor locate functions to misbehave when
+passed a value of 0.
+
+PDQPRINT.ASM      9/9/91
+Moved external declaration from .DATA? to .DATA
+
+All ASM and INC files that begin with C$  9/9/91
+Renamed all the C$ to C_ file names for compatibility with NMAKE.
+ ^------------------------------ Version 2.53 ------------------------------^
+                                                                 
+OPENCOMX.ASM      10/6/91
+Fixed a bug introduced in version 2.53 on call to IsAPort.
+
+COMLINP.ASM       10/6/91
+Fixed the bug where ComLineInput didn't return ERROR 62 when the string being
+returned is longer than 256 characters.
+ ^------------------------------ Version 2.54 ------------------------------^
+
+TWOPORTS.ASM      12/30/91
+Split up into C_COMISR.ASM and COMMDATA.ASM for future expansion of PDQCOMM,
+and to allow four ports open on different IRQs.
+
+ISAPORT.ASM       12/30/91
+Added delay after putting UART into loopback mode for compatibility with
+the Rockwell chip set.
+
+UARTTYPE.ASM      12/30/91
+Moved CLI command so it would function with the call to ISAPORT.
+
+OPENCOM.ASM OPENCOMX.ASM CLOSECOM.ASM  12/30/91
+Added support for "AT" IRQs.
+
+PDQCOMM.RSP COMMQB4.RSP COMMBC7.RSP    12/30/91
+Changed to reflect the new file names.
+ ^------------------------------ Version 2.55 ------------------------------^
+
+OPENCOM.ASM and OPENCOMX.ASM    1/21/92
+Fixed a bug that closed the port when it was mistakenly opened a second time.
+Also fixed a bug that caused OpenCom to fail after trying to open a port that
+does not exist.
+ ^------------------------------ Version 2.56 ------------------------------^
+
+ISAPORT.ASM       2/19/92               
+Changed the IsAPort routine to a more conventional one due to incompatible
+modem chip sets.
+ ^------------------------------ Version 2.57 ------------------------------^
+
+ISAPORT.ASM       5/7/92
+Changed yet again so that it would work in a DOS box under Windows.
+
+XMODEM.BAS        5/7/92
+Replaced with XYMODEM.BAS.
+
+XYMODEM.BAS       5/7/92
+Added XModem-1K and YModem file transfer protocals. See README for info on
+using these routines.
+
+CLRXOFF.ASM       5/7/92
+New routine that manually clears the XOFF flag to allow PDQComm to resume
+tansmitting.
+
+XXXDISP.BAS       5/7/92
+Fixed a bug that added an extra linefeed when the line length was exactly
+the number of maximum columns. Speeded up all routines by positioning
+the cursor less frequently.
+ ^------------------------------ Version 2.58 ------------------------------^
+
+GETPCON.ASM       9/14/92
+Fixed a bug that caused GetPortConfig to return an invalid port error.
+
+                  9/22/92
+Added support for Visual Basic for DOS
+ ^------------------------------ Version 2.59 ------------------------------^
+
+XYMODEM.BAS       12/10/92
+Added YModem-G. Cleaned up code considerably.
+
+XXXXDISP.BAS      12/10/92
+Fixed problems emulations had when running under Desqview.
+
+COMPEEK.ASM       12/10/92
+New routine that does a nondestructive read on the receive buffer.
+
+COMINSTR.ASM      12/10/92
+New routine that does an INSTR on the receive buffer.
+ ^------------------------------ Version 2.60 ------------------------------^
+
+ANSIDISP.BAS      1/15/93
+Mistakenly used MASM comments instead of BASIC comments. Now checks if using
+the BIOS on ANSI clear screen sequences.
+ ^------------------------------ Version 2.61 ------------------------------^
+
+C_TIME.ASM        4/27/93
+Had a logic error that caused the elapsed time function to break at certain
+times of the day.
+
+ISAPORT.ASM       4/27/93
+Yet another change. Added some delays when accessing the port to see if 
+that solves a problem a few people still have with this function. A shot in
+the dark since the old version worked fine on my 486DX2-50, but I'm running
+out of ideas.
+ ^------------------------------ Version 2.62 ------------------------------^
+ 
+ISAPORT.ASM
+Yet another change.  Hopefully, this will make it 100% reliable.
+
+XSTAT1.BAS
+New and improved version that shows transfer progress with a "gas guage".
+ ^------------------------------ Version 2.63 ------------------------------^
+
+XSTAT1.BAS
+Cleaned up and added to the header comments showing how the routine is called.
+
+ANSITERM.BAS
+Cleaned up the header comments showing how to compile and link the program.
+
+FILESPEC.BAS
+Removed references to the QB.BI include file which works only with QB 4.x,
+and defined RegType in the program file proper so no include file is needed.
+
+COMMDECL.BAS
+Added a missing percent sign to the YModemGReceive function declaration, to
+avoid the "Duplicate definition" error you'd get if DEFINT was not used in a
+program that used this function.
+
+XYMODEM.BAS
+In the XYModemReceive function, BytesSent& = FileLen& was added at the code
+labeled "Last block of data" to avoid an "Illegal function call" error in
+XStat1 when sending certain-sized files.  Code was also added to close the
+never-received file if the transfer was unsuccessful due to a timeout error.
+ ^------------------------------ Version 2.64 ------------------------------^
+
+XYMODEM.BAS
+In two places a test was added to ensure that small files sent in less than
+a second don't create a "Divide by zero" error in the BytesPerSec calculation.
+ ^------------------------------ Version 2.65 ------------------------------^

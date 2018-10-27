@@ -1,0 +1,7 @@
+DEFINT A-Z
+
+DECLARE SUB TTYInit ()
+DECLARE SUB TTYPrint (Text$)
+DECLARE SUB SetTTYWindow (WinNum%)
+
+COMMON SHARED /TTY/ TTY AS TermType, AddLineFeeds AS INTEGER

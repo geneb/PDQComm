@@ -1,0 +1,86 @@
+This file contains important information about the PDQComm assembly routines.
+
+All of the assembly language subroutines in PDQComm are meant to be assembled
+using Microsoft's Macro Assembler version 5.1.  It is very unlikely that you
+will ever need to modify these routines or reassemble them, however if you do
+the following guidelines must be observed.  The information presented herein
+is provided for completeness only, and has nothing to do with using PDQComm.
+
+
+
+RENAMING THE SOURCE FILES
+
+Before assembling any of the source files, they should be renamed temporarily
+to PDQCOMM.ASM.  This avoids a MASM quirk which generates an extra 0-byte
+segment for each file.  Normally, empty segments cause no harm, and they do
+not increase the size of your programs.  But when there are many different
+segments in a single .EXE program, LINK requires the use of the /SEG: command
+switch.  By renaming the files before assembly, we can avoid this problem and
+make PDQComm that much easier for novice users.  Therefore, the following
+steps would be used to assemble the OPENCOM.ASM file:
+
+    REN OPENCOM.ASM PDQCOMM.ASM    <--- rename the source file
+    MASM PDQCOMM ;                 <--- assemble it
+    REN PDQCOMM.* OPENCOM.*        <--- rename both the .ASM and .OBJ at once
+
+Understand that this "empty segment" issue is a bug in the way MASM handles
+simplified segmentation, and it occurs only when an explicit segment name is
+given in conjunction with the .Code directive.  PDQComm uses explicit segment
+naming to allow some of its routines to be designed as near, intrasegment
+calls.  This slightly improves the size and execution speed of those routines.
+
+PDQComm versions 2.53 and later are assembled with MASM 6.0.  This version of
+MASM does not have the above mentioned bug so renaming the files is no longer
+necessary.  However, you should use the MASM 5.1 compatibility switch when
+using MASM 6.0.
+
+
+
+DEFINING "QLB" FOR COMMQB4.LIB
+
+Because of the internal differences in how errors are handled in P.D.Q. as
+opposed to regular QuickBASIC, several of the assembly language routines use
+"conditional assembly" directives.  Therefore, if you plan to assemble these
+routines for use in PDQCOMM.LIB no extra steps are necessary, as shown in the
+example above.
+
+To create this file for use in a Quick Library (or with regular QuickBASIC),
+invoke MASM 5.1 as follows:
+
+
+    REN OPENCOM.ASM PDQCOMM.ASM    <--- as above
+    MASM PDQCOMM /DQLB ;           <--- this satisfies the IFDEF in OPENCOM
+    REN PDQCOMM.* OPENCOM.*        <--- as above
+
+This tells MASM that you have defined the string "QLB", and that it is to
+make certain substitutions in the source code.  In particular, this lets the
+various PDQComm routines assign BASIC's ERR function (which is named B$ERRNUM
+internally as opposed to P$PDQERR in P.D.Q.).  Therefore, you will use /DQLB
+when creating .OBJ files for inclusion in COMMQB4.LIB, but not when creating
+.OBJ files for PDQCOMM.LIB.
+
+
+
+BASIC 7 SUPPORT
+
+DEFINING "FS" FOR COMMBC7.LIB
+
+Because of the internal differences in how strings are handled in BASIC 7.x
+PDS with the /FS (far string) switch and in the QBX environment as opposed to
+regular QuickBASIC, several of the assembly language routines use
+"conditional assembly" directives.  Therefore, if you plan to assemble these
+routines for use in PDQCOMM.LIB no extra steps are necessary, as shown in the
+example above.
+
+To create this file for use in a QBX Quick Library (or with BASIC 7.x PDS
+far strings), invoke MASM 5.1 as follows:
+
+
+    REN OPENCOM.ASM PDQCOMM.ASM    <--- as above
+    MASM PDQCOMM /DQLB /DFS;       <--- this satisfies the IFDEF in OPENCOM
+    REN PDQCOMM.* OPENCOM.*        <--- as above
+
+This tells MASM that you have defined the string "QLB" and the string "FS",
+and that it is to make certain substitutions in the source code. You must use
+the /DQLB switch along with the /DFS switch to tell MASM that it is not only
+a regular QB library, but that it also uses far strings.

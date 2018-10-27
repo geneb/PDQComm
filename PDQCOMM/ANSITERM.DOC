@@ -1,0 +1,24 @@
+ANSITERM.BAS no longer requires P.D.Q. to compile or run. You can run
+AnsiTerm in the QB, QBX, and VBDOS environment, but it will require you
+to create a custom QuickLibrary. This is because AnsiTerm uses CALL INTERRUPT.
+To create these QLBs, you need to do the following steps based on the
+environment.
+
+QuickBASIC 4.5
+
+   LINK /QU COMMQB4.LIB QB.LIB, ANSITERM, , BQLB45;
+
+BASIC PDS 7.1
+
+   LINK /QU COMMBC7.LIB QBX.LIB, ANSITERM, , QBXQLB;
+
+Visual Basic for DOS
+
+   LINK /QU COMMBC7.LIB VBDOS.LIB, ANSITERM, , VBDOSQLB:
+
+
+AnsiTerm determines the name of the currently running EXE to get the name
+of its configuration file. When you run AnsiTerm in the environment, the
+currently running EXE will be QB, QBX, or VBDOS. Therefore, Ansiterm will
+create a configuration file called QB.CFG, QBX.CFG, or VBDOS.CFG.
+

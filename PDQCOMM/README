@@ -1,0 +1,398 @@
+   This file contains important supplemental information regarding PDQComm.
+
+VISUAL BASIC FOR DOS
+====================
+
+If you are using VB/DOS, use the COMMVBD.QLB Quick Library for editing your
+program in the BASIC environment, and then link with the COMMBC7.LIB library
+to create your final .EXE program.  If you prefer to let VB/DOS shell to the
+compiler rather than compile and link manually, rename the COMMBC7.LIB file
+to COMMVBD.LIB, which is what LINK will expect when shelled-to by VB/DOS.
+
+
+XYMODEM.BAS
+===========
+
+Although the PDQComm manual lists returns codes for cancelling when using the
+X-and Y-Modem file transfers, it doesn't explain how to do so:  You can press
+Alt-X at any time when either sending or receiving a file to cancel the
+transfer in progress.
+
+
+CONFLICTS WITH CHECKSUM
+=======================
+
+There is a routine called Checksum in QuickPak Professional that will cause a
+"Duplicate Definition Error" when combining QuickPak and PDQComm libraries.
+Although the names are the same, the routines are quite different.  In order
+to use PDQComm's Checksum, you need to remove the routine from PRO.LIB.  This
+is done in the following manner:
+
+    LIB PRO -*CHECKSUM ;
+
+This will remove Checksum from PRO.LIB.  LIB.EXE will create PRO.BAK which is
+the original PRO.LIB, and also CHECKSUM.OBJ which is a safety copy of the
+Checksum routine from PRO.LIB in object module form.  You can then combine
+PRO.LIB and PDQCOMM.LIB as explained in the manual.  If you are using BASIC 7
+PDS with far strings, then these operations will of course be made to the
+PRO7.LIB file instead of PRO.LIB.
+
+
+DOCUMENTATION ADDITIONS
+=======================
+
+Although not stated, the OpenCom routine accepts any legal speed argument.
+In particular, you can use "110" to communicate wth older teletype equipment.
+
+
+DOCUMENTATION ERRORS
+====================
+
+The listing for the ModemType type variable is incorrect on pages 2-9 and
+3-14 of the manual.  The correct ModemType appears on page 3-29 and in the
+COMMDECL.BAS file.
+
+Two of the ANSI escape codes listed in the manual are incorrect.  On pages
+B-1 (near the bottom) and B-4 (in the middle) the codes for moving the cursor
+forward and backward are wrong.  Change 68 to 67, and change 69 to 68 on
+both pages.
+
+
+
+B_ONEXIT
+========
+
+QuickBASIC 4.0 and BASIC 6.0 do not support B_OnExit.  B_OnExit is used by
+the assembler routines that need to take action when your BASIC program ends.
+PDQComm uses this to make sure that everything is restored correctly to the
+same state as when your program started.  The file QB40BEXT.OBJ is a stub
+file that you can link to your program to add the B_OnExit routine.  This
+stub should be used only if you are using QB 4.0.  You will specify this file
+on your link line like this:
+
+    LINK MyProg QB40BEXT , , NUL , COMMQB4 ;
+
+If you will be using QuickBASIC 4.0 or BASIC 6.0 only you can add B_ONEXIT
+to the library permanently as follows:
+
+    LIB COMMQB4 +QB40BEXT ;
+
+To create a new Quick Library, you also need to do this:
+
+    LINK /Q COMMQB4.LIB , , NUL , BQLB40 ;
+
+If you are linking your programs with the P.D.Q. replacement library this
+stub file is not needed.  If you have any problems using this stub routine,
+please leave a message to Dave Cleary on the Crescent BBS at 203-426-5958.
+
+
+
+USING PDQCOMM WITH WINDOWS
+==========================
+
+Because Windows exerts total control over the hardware on your machine, you
+may experience some strange problems when using PDQComm.  One problem we have
+found is when using the new IsAPort function (see below).  If you use IsAPort
+in a DOS partition under Windows to check for a port that shares the same
+interrupt as your mouse, your mouse will no longer function and the PC will
+require a power off reset.  We have no idea why this is but if you experience
+any strange problems when using PDQComm in a DOS partition under Windows, try
+running it outside of Windows to see if it goes away.
+
+Included with PDQCOMM is a freeware program from Cherry Hill Software that
+will allow DOS programs under Windows to use the 16550 UART if one is
+present. CHCOMB.EXE is a self extracting archive. To use this program, just
+run CHCOMB and read the documentation on modifying your SYSTEM.INI file.
+Crescent Software does not support this software. Although PDQCOMM has been
+tested with it and works fine, there has been a few reports of some DOS 
+programs having problems with it.
+
+
+
+PDQCOMM SUPPORTS 4 PORTS OPEN AT ONCE AND ALL 15 IRQ VALUES
+===========================================================
+
+PDQCOMM now supports "AT" IRQs and the ability to have 4 ports open at once.
+The ports must all be on separate IRQ lines due to the design of the ISA
+bus.  Therefore, when opening ports that do not contain the standard IRQ
+line you must use OpenComX.  OpenComX now also supports specifying IRQs 8-15
+which is available on IBM AT and compatibles.  However, not all these IRQ
+lines are necessarily free, so you must be sure that your port has exclusive
+control of the IRQ line.  Standard AT IRQs are:
+
+    IRQ             Device
+    ---------------------------------
+     8         Realtime Clock
+     9         Software redirect to 2
+    10         Open
+    11         Open
+    12         Open
+    13         Numeric coprocessor
+    14         Fixed disk controller
+    15         Open
+
+In order to set your Com ports to use these IRQ lines, you will need a 16
+bit serial port board.  Quatech makes high quality, 16 bit serial port boards
+that work nicely with PDQComm.  You can reach Quatech at 216-434-3154, and
+ask them to send you a catalog.
+
+           =======================================================
+
+NEW ROUTINES
+============
+
+IsAPort% (Function)
+-------------------
+
+PURPOSE:
+
+Checks to see if there is a serial port at the specified address.
+
+SYNTAX:
+
+Found = IsAPort(Address%)
+
+WHERE:
+
+Address% is the base address of the port you want to check.  IsAPort returns
+True (-1) if there is a port, or False (0) if there is no port installed.
+
+COMMENTS
+
+Because IsAPort has been designed as a function, it must be declared before
+it may be used.
+
+See the comments above about using IsAPort under Windows.
+
+
+ClearXOff (Subroutine)
+----------------------
+
+PURPOSE:
+
+Clears the XOFF flag manually to allow PDQComm to continue transmitting.
+
+SYNTAX:
+
+CALL ClearXOff
+
+COMMENTS:
+
+You would use this routine when you mistakenly receive an XOFF due to
+line noise or some other circumstance.
+
+
+XModem1KSend% (Function)
+------------------------
+
+PURPOSE:
+
+Sends a file using the XModem-1K protocol.
+
+SYNTAX:
+
+Ercd = XModem1KSend (FileName$)
+
+WHERE: 
+
+FileName$ is the name of the file you would like to send.
+
+COMMENTS:
+
+The XModem-1K protocol is similar to XModem, but use 1024 byte blocks 
+instead of 128 byte blocks. This will lead to improved transfer efficiency,
+unless you have a noisy line. This protocol is sometimes mistakenly 
+identified as YModem. However, YModem is quite different as you will see
+below.
+
+
+XModem1KReceive% (Function)
+---------------------------
+
+PURPOSE:
+
+Receives a file using the XModem-1K protocol.
+
+SYNTAX:
+
+Ercd = XModem1KReceive (FileName$)
+
+WHERE: 
+
+FileName$ is the name of the file you would like to send.
+
+COMMENTS:
+
+The XModem-1K protocol is similar to XModem, but use 1024 byte blocks 
+instead of 128 byte blocks. This will lead to improved transfer efficiency,
+unless you have a noisy line. This protocol is sometimes mistakenly 
+identified as YModem. However, YModem is quite different as you will see
+below.
+
+
+YModemReceive% (Function)
+-------------------------
+
+PURPOSE:
+
+YModemReceive receives a file over an open serial port using the YModem
+protocol.
+
+SYNTAX:
+
+DO
+   ReturnCode = YModemReceive%(FileName$)
+LOOP WHILE ReturnCode = 0
+IF ReturnCode = 6 THEN ReturnCode = 0
+
+WHERE:
+
+FileName$ is the name of the file you want to receive.
+
+COMMENTS:
+
+The YModem protocol is a "batch" protocol.  This means you can send and
+receive multiple files in one batch transfer.  Because of this capability,
+the YModem routines add a return code of 6 to indicate that there is nothing
+left to transfer.  The YModem protocol also lets the sender specify the name
+of the file.  This means you can call YModemReceive with a null string, and
+it will use the file name the sender specifies.  You should be aware that
+YModemReceive will overwrite FileName$ if it already exists.
+
+
+YModemSend% (Function)
+----------------------
+
+PURPOSE:
+
+YModemSend sends a file over an open serial port using the YModem protocol.
+
+SYNTAX:
+
+ReturnCode = YModemSend%(FileName$)
+IF ReturnCode = 0 THEN 
+   ReturnCode = YModemSend%("")
+END IF
+
+WHERE:
+
+FileName$ is the name of the file you want to send.
+
+COMMENTS:
+
+The YModem protocol is a "batch" protocol.  This means you can send and
+receive multiple files in one batch transfer.  Because of this capability,
+the YModem routines add a return code of 6 to indicate that there is nothing
+left to transfer.  After YModemSend successfully sends a file or a group of
+files and returns a code of 0, YModemSend must be called one more time with
+a null filename to complete the transfer.
+
+YModemGReceive% (Function)
+-------------------------
+
+PURPOSE:
+
+YModemGReceive receives a file over an open serial port using the YModem-G
+protocol.
+
+SYNTAX:
+
+DO
+   ReturnCode = YModemGReceive%(FileName$)
+LOOP WHILE ReturnCode = 0
+IF ReturnCode = 6 THEN ReturnCode = 0
+
+WHERE:
+
+FileName$ is the name of the file you want to receive.
+
+COMMENTS:
+
+YModem-G is used when you are using a error correcting modem. It works the
+same as the YModem protocol. The only difference between YModem and YModem-G
+is that there is no error recovery. This is why an error correcting modem
+should be used. While using this protocol will cause your transfer to abort
+on any error, it also provides the highest throughput.
+
+YModemGSend% (Function)
+----------------------
+
+PURPOSE:
+
+YModemGSend sends a file over an open serial port using the YModem-G protocol.
+
+SYNTAX:
+
+ReturnCode = YModemGSend%(FileName$)
+IF ReturnCode = 0 THEN 
+   ReturnCode = YModemGSend%("")
+END IF
+
+WHERE:
+
+FileName$ is the name of the file you want to send.
+
+COMMENTS:
+
+The YModemGSend function works exactly the same as YModemSend. This should only
+be used with error correcting modems as described above.
+
+ComInstr% (Function)
+-------------------
+
+PURPOSE:
+
+Searches the receive buffer looking for specified text. Returns the position
+in the buffer where the text starts.
+
+SYNTAX:
+
+Found = ComInstr(Text$, SCase%)
+
+WHERE:
+
+Text$ is the text you are searching for. SCase% determines whether you are
+doing a case sensitive search. Set SCase% to TRUE (-1) if you want case to
+matter.
+
+COMMENTS
+
+Because ComInstr has been designed as a function, it must be declared before
+it may be used.
+
+ComInstr is basically an INSTR for the receive buffer. You can use it to wait
+for certain text to be received before you take action.
+
+ComPeek% (Function)
+-------------------
+
+PURPOSE:
+
+Does a nondestructive read of the receive buffer
+
+SYNTAX:
+
+Text$ = ComPeek$(NumBytes%)
+
+WHERE:
+
+NumBytes% is the number of bytes you want to read.
+
+COMMENTS
+
+Because ComPeek$ has been designed as a function, it must be declared before
+it may be used.
+
+ComPeek$ works exactly like ComInput$ except it doesn't update the internal
+buffer pointers. Therefore, it allows you to read the receive buffer without
+actually removing any data from it.
+
+
+XSTAT1.BAS
+----------
+
+This is a new version of the XStat routine that is a little fancier than the
+original which is called from XYMODEM.BAS.  This new version is called XStat1
+and it includes a percent complete bar.  The original XStat is still called
+in XYMODEM.BAS, but now commented them out, in case you have created a custom
+XStat yourself.
