@@ -5,6 +5,7 @@
 ;     of the receive buffer and also sets the nearempty and nearfull points.
 ;
 ;  Copyright (c) 1990 Clearware Computing, By David Cleary
+;  Released to the Public Domain on 10/26/18.
 ;=============================================================================
 
 .Model Medium, Basic
